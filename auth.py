@@ -27,9 +27,8 @@ class AuthSystem(DataManager):
 
             if record:
                 existing_username, first_name = record
+
                 
-                # Logic: Only allow 'sign up' if Username is empty or placeholder
-                # If your seeds already have usernames, you might adjust this condition
                 if existing_username is None or existing_username == "" or existing_username == "PENDING":
                     query = "UPDATE Users SET Username = ?, HashedPassword = ? WHERE Email = ?"
                     cursor.execute(query, (username, hashed, email))
