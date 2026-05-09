@@ -78,7 +78,7 @@ class AuthSystem(DataManager):
         return None, None
         
     def plant_seeds(self): 
-       # This will only work if "a.crimson@encrypt.com" already exists in your DB
-       self.success = self.sign_up("a.crimson@encrypt.com", "acronims", "acruzin722")
+       self.success = self.sign_up()
        if self.success:
-              print("[*] Seed planted: User signed up.")
+        print(f"[*] Seed planted: {self.first_name} is now registered.")
+        return self.success

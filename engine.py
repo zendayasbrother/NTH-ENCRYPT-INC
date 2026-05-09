@@ -29,7 +29,6 @@ class ManagementSystem(AuthSystem):
     def talent_interface(self):
         # Continue the talent interface here, allowing talents to view only their own records.
         print(f"Accessing your records...") 
-        if self.first_name:
-            self.display_table(first_name = self.first_name)
+
         
         
