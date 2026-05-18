@@ -87,24 +87,33 @@ class ManagementSystem(AuthSystem):
 
     def prop_form(self):
         conn, cursor = self.connect_database()
-    
+        if not conn:
+            print("[!] Database connection failed.")
+            return
+        name = self.first_name
+        user = self.username
+        
         # Algorithmic form
         print("\n--- New Project Proposal Form ---")
         title = input("Project Title: ")
-        projType = input("Project Type: ")
+        self.projType = input("Project Type: ")
         self.genre = input("Genre (Action/Comedy/Drama/etc): ")
         self.est_budget = int(input("Estimated Budget (£): "))
         
-            
-        budget = pd.read_sql_query(f"SELECT Budget FROM Projects", conn)
-        genres = pd.read_sql_query(f"SELECT Genre FROM Projects", conn)
-        # if statement with "if self.est_budget > max(1.5 * greates budget table by genre): denided, elif 1.5 times: bottom priority queue, else: ideal film + pos
-        if self.est_budget > (1.25 * max(budget)):
-            # Denied, re-enter suitable budget
-            pass
-        else:
-            print(f"[*] Proposal for '{title}' saved to pending validation queue.")
-            cursor.execute("UPDATE ")
-        
+        try:    
+            budget = pd.read_sql_query(f"SELECT Budget FROM Projects", conn)
+            max_budget = int(budget['Budget'].max() * 1.25)
+            self.genres = pd.read_sql_query(f"SELECT Genre FROM Projects", conn)
+            # if statement with "if self.est_budget > max(1.5 * greates budget table by genre): denided, elif 1.5 times: bottom priority queue, else: ideal film + pos
+            if self.est_budget > (1.25 * max_budget):
+                # Denied, re-enter suitable budget
+                print(f"Sorry {name}, the budget for this proposal - {title} - exceeds the budget. Please re-enter a lower figure")
+                self.est_budget = int(input("Estimated Budget (£): "))
+            else:
+                # Start loading values into table as INSERT
+                print(f"[*] Proposal for '{title}' saved to pending validation queue.")
+                cursor.execute("INSERT INTO Proposals VALUES: ")
+        except Exception as e:
+            print(f"[!] Error calculating financial thresholds: {e}")
         
     
