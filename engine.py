@@ -1,4 +1,6 @@
 from auth import AuthSystem
+import pandas as pd
+import sqlite3 
 
 class ManagementSystem(AuthSystem):
     def __init__(self, db_path):
@@ -29,6 +31,22 @@ class ManagementSystem(AuthSystem):
     def talent_interface(self):
         # Continue the talent interface here, allowing talents to view only their own records.
         print(f"Accessing your records...") 
-
-        
-        
+        # insert query to pull every table with respective names
+        def display_table(self, table_name):
+            conn, _ = self.connect_database()
+            if conn:
+                try:
+                    df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn) # Query here
+                    if df.empty:
+                        print(f"\n[!] The {table_name} table is currently empty.") 
+                    else:
+                        print(f"\n--- {table_name} Table ---")
+                        # index=False makes it look cleaner in the console
+                        print(df.to_string(index=False)) 
+                except Exception as e:
+                    print(f"Error reading table: {e}")
+                finally:
+                    conn.close()
+        def prop_form():
+            # Subroutine for algorithmic form to draft idea proposal
+            pass
