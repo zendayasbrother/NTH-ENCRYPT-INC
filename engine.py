@@ -29,6 +29,7 @@ class ManagementSystem(AuthSystem):
 
     def admin_interface(self):
         conn, cursor = self.connect_database()
+        # Choices before a button and reactions
         while True:
             print("\n--- ADMIN DASHBOARD ---")
             print("1. View Table")
@@ -58,6 +59,7 @@ class ManagementSystem(AuthSystem):
                 self.display_talent_records(self.current_user)
             elif choice == "2":
                 self.prop_form()
+                # Choice navigation logic here
             elif choice == "3":
                 break
 
@@ -104,8 +106,8 @@ class ManagementSystem(AuthSystem):
             budget = pd.read_sql_query(f"SELECT Budget FROM Projects", conn)
             max_budget = int(budget['Budget'].max() * 1.25)
             self.genres = pd.read_sql_query(f"SELECT Genre FROM Projects", conn)
-            # if statement with "if self.est_budget > max(1.5 * greates budget table by genre): denided, elif 1.5 times: bottom priority queue, else: ideal film + pos
-            if self.est_budget > (1.25 * max_budget):
+            # if statement with "if self.est_budget > max(1.25 * greates budget table by genre): denided, priority and queue pos is based on ideality
+            if self.est_budget > max_budget:
                 # Denied, re-enter suitable budget
                 print(f"Sorry {name}, the budget for this proposal - {title} - exceeds the budget. Please re-enter a lower figure")
                 self.est_budget = int(input("Estimated Budget (£): "))
