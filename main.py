@@ -1,14 +1,52 @@
 import os
 from engine import ManagementSystem
+from auth import AuthSystem
 from dotenv import load_dotenv
 
+def run_app(auth, engine):
+    print("--- Encrypt Inc. OS ---")
+    auth_choice = input("Do you have an account? (yes/no): ").strip().lower()
+
+    if auth_choice == "no":
+        email = input("Enter your email for verification: ")
+        username = input("Choose a username: ")
+        password = input("Choose a password: ")
+        corpcode = input("Enter your corporate code: ")
+        success = auth.sign_up(email, username, password)
+        if success:
+            print("[*] Sign-up successful. You can now log in.")
+        else:
+            print("[!] Sign-up failed. Please try again.")
+            return
+
+    if auth_choice in {"yes", "no"}:
+        username = input("Username: ")
+        password = input("Password: ")
+        user_type, first_name = auth.login(username, password)
+
+        if user_type:
+            print(f"[*] Login successful. Welcome {first_name}.")
+            engine.current_user = username
+            engine.current_user_type = user_type
+            engine.current_user_first_name = first_name
+
+            if user_type == "Admin":
+                engine.admin_interface()
+            else:
+                engine.talent_interface()
+        else:
+            print("[!] Login failed. Please check your credentials.")
+    else:
+        print("[!] Invalid choice. Please enter yes or no.")
+
+
 if __name__ == "__main__":
-    load_dotenv() 
-    db_path = os.getenv('DB_PATH') 
-    
+    load_dotenv()
+    db_path = os.getenv("DB_PATH")
+
     if db_path and os.path.exists(db_path):
-        app = ManagementSystem(db_path)
-        app.plant_seeds()
-        app.run_app()
+        auth = AuthSystem(db_path)
+        engine = ManagementSystem(db_path)
+        run_app(auth, engine)
     else:
         print(f"Error: Database path is invalid or missing.")

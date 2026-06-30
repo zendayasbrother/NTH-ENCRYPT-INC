@@ -1,5 +1,6 @@
 from auth import AuthSystem
 import pandas as pd
+import sqlite3
 import heapq
 from types import SimpleNamespace
 
@@ -8,28 +9,6 @@ class ManagementSystem(AuthSystem):
         super().__init__(db_path)
         self.proposal_heap = []
         self.proposal_counter = 0
-        
-    def run_app(self):
-        print("--- Encrypt Inc. OS ---")
-        user = input("Username: ")
-        pw = input("Password: ")
-        
-        user_type, first_name = self.authenticate_user(user, pw)
-        
-        if user_type:
-            print(f"\nLogin Successful! Welcome: {first_name} // ({user_type.upper()})")
-            # Store current user state for session-like permission verification
-            self.current_user = user
-            self.current_user_type = user_type
-            self.current_user_first_name = first_name
-            
-            if user_type == "Admin":
-                self.admin_interface() 
-            else:
-                self.talent_interface()
-        else:
-            print("\nAccess Denied.")
-
 
     def admin_interface(self):
         conn, cursor = self.connect_database()
@@ -74,11 +53,9 @@ class ManagementSystem(AuthSystem):
             
         print(f"\n--- Fetching secure records for {username} ---")
         try:
-            # Explicitly checking key tables by parameterized username to avoid leaks
             tables_to_check = ['Users', 'ParticipationLedger', 'Proposals']
             
             for table in tables_to_check:
-                # Note: Table names are hardcoded safely here; query parameters are protected
                 query = f"SELECT * FROM {table} WHERE Username = ?"
                 df = pd.read_sql_query(query, conn, params=(username,))
                 
@@ -104,6 +81,7 @@ class ManagementSystem(AuthSystem):
         title = input("Project Title: ").strip() or "Untitled Proposal"
         project_type = input("Project Type: ").strip() or "Undefined"
         genre = input("Genre (Action/Comedy/Drama/etc): ").strip() or "Undefined"
+        max_budget = 750000  # based on existing budget table
 
         try:
             try:

@@ -26,7 +26,6 @@ class AuthSystem(DataManager):
                 print(f"[!] Access Denied: {email} not in Registry.")
                 return False
 
-            # FIX 1: Move the unpacking inside the try block and AFTER the 'None' check
             existing_username, first_name = record
 
             if existing_username is None or existing_username in ["", "PENDING"]:
@@ -51,7 +50,7 @@ class AuthSystem(DataManager):
             if conn:
                 conn.close()
         
-    def authenticate_user(self, username, password):
+    def login(self, username, password):
         conn, cursor = self.connect_database()
         if not conn: return None, None
         
@@ -74,9 +73,3 @@ class AuthSystem(DataManager):
                 conn.close()
             
         return None, None
-        
-    def plant_seeds(self): 
-       self.success = self.sign_up()
-       if self.success:
-        print(f"[*] Seed planted: {self.first_name} is now registered.")
-        return self.success
