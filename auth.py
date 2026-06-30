@@ -44,12 +44,10 @@ class AuthSystem(DataManager):
                 print(f"[!] Error: {email} already has username '{existing_username}'.")
                 return False
         
-        # FIX 2: Indentation was wrong here, and it needed to catch the 'try' above
         except sqlite3.Error as e:
             print(f"Database Error during sign-up: {e}")
             return False
         finally:
-            # FIX 3: Always close your connection in sign_up too!
             if conn:
                 conn.close()
         
