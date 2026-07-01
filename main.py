@@ -22,22 +22,26 @@ def run_app(auth, engine):
     if auth_choice == "yes":
         username = input("Username: ")
         password = input("Password: ")
-        user_type, first_name = auth.login(username, password)
+        success = auth.login(username, password)
+        if success:
+            print("[*] Login successful. You can now log in.")
+            user_type, first_name = auth.login(username, password)
+            if user_type:
+                print(f"[*] Login successful. Welcome {first_name}.")
+                engine.current_user = username
+                engine.current_user_type = user_type
+                engine.current_user_first_name = first_name
 
-        if user_type:
-            print(f"[*] Login successful. Welcome {first_name}.")
-            engine.current_user = username
-            engine.current_user_type = user_type
-            engine.current_user_first_name = first_name
-
-            if user_type == "Admin":
-                engine.admin_interface()
-            else:
-                engine.talent_interface()
+                if user_type == "Admin":
+                    engine.admin_interface()
+                else:
+                    engine.talent_interface()
         else:
             print("[!] Login failed. Please check your credentials.")
     else:
-        print("[!] Invalid choice. Please enter 'yes' or 'no'.")
+        print("[!] Authentication failed. Please enter 'yes' or 'no' to proceed.")
+        return
+
 
 
 if __name__ == "__main__":
