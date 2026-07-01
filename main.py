@@ -19,7 +19,7 @@ def run_app(auth, engine):
             print("[!] Sign-up failed. Please try again.")
             return
 
-    if auth_choice in {"yes", "no"}:
+    if auth_choice == "yes":
         username = input("Username: ")
         password = input("Password: ")
         user_type, first_name = auth.login(username, password)
@@ -37,7 +37,7 @@ def run_app(auth, engine):
         else:
             print("[!] Login failed. Please check your credentials.")
     else:
-        print("[!] Invalid choice. Please enter yes or no.")
+        print("[!] Invalid choice. Please enter 'yes' or 'no'.")
 
 
 if __name__ == "__main__":

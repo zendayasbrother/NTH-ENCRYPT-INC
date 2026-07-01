@@ -115,14 +115,21 @@ class ManagementSystem(AuthSystem):
         )
 
         self._enqueue_proposal(proposal)
+        score = self.priority_score(proposal)
+        
         try:
             cursor.execute(
-                "INSERT INTO Proposals VALUES (?, ?, ?, ?, ?)",
-                (title, project_type, genre, est_budget, username),
+                """
+                INSERT INTO Proposals 
+                (Title, ProjectType, Genre, Budget, SubmittedBy, PriorityScore) 
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (title, project_type, genre, est_budget, username, score),
             )
             conn.commit()
             print(f"[*] Proposal for '{title}' saved to pending validation queue.")
-            print(f"[*] Priority score: {self.priority_score(proposal)}")
+            print(f"[*] Priority score: {score}")
+            
         except Exception as e:
             conn.rollback()
             print(f"[!] Error saving proposal: {e}")
