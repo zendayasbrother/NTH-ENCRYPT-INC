@@ -17,7 +17,7 @@ def run_app(auth, engine):
             print("[*] Sign-up successful. You can now log in.")
         else:
             print("[!] Sign-up failed. Please try again.")
-            return
+            return # move respective input validation to auth.py for better separation of concerns
 
     if auth_choice == "yes":
         username = input("Username: ")
