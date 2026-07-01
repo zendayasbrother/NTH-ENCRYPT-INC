@@ -1,5 +1,6 @@
 # Ignore environment variables
 .env
+index.txt
 
 # Ignore the actual SQLite database file
 *.sqlite

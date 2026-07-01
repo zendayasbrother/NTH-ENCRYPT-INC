@@ -1,6 +1,7 @@
 from auth import AuthSystem
 import pandas as pd
 import sqlite3
+import sys
 import heapq
 from types import SimpleNamespace
 
@@ -22,13 +23,20 @@ class ManagementSystem(AuthSystem):
             
             if choice == "1":
                 name = input("Enter the table name to display: ")
-                self.display_table(name) # Safe global call inherited from DataManager
+                self.display_table(name) # excluding Proposals for duplicate management
+                if name.lower() == "proposals":
+                    print("[!] Note: Proposals are managed through the proposal queue.")
             elif choice == "2":
                 print("Accessing creator proposals...")
-                # Insert proposal manipulation logic here
-                cursor.execute("")
+                cursor.execute("SELECT * FROM Proposals ORDER BY PriorityScore DESC")
             elif choice == "3":
-                break
+                exit_choice = input("Are you sure you want to exit? (yes/no): ").strip().lower()
+                if exit_choice == "yes":
+                    print("[*] Exiting Admin Dashboard.")
+                    sys.exit(0)
+                    break
+                elif exit_choice == "no":
+                    continue
         
     def talent_interface(self):
         while True:
