@@ -23,9 +23,9 @@ def run_app(auth, engine):
     if auth_choice == "yes":
         username = input("Username: ")
         password = pwinput.pwinput(prompt="Password: ", mask="*")
-        login_result = auth.login(username, password)
-        if login_result:
-            user_type, first_name = login_result
+        success = auth.login(username, password)
+        if success:
+            user_type, first_name = auth.get_user_info(username)
             print("[*] Login successful. You can now log in.")
             if user_type:
                 print(f"[*] Login successful. Welcome {first_name}.")

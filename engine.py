@@ -37,9 +37,10 @@ class ManagementSystem(AuthSystem):
             
             if choice == "1":
                 name = input("Enter the table name to display: ")
-                self.display_table(name) # excluding Proposals for duplicate management
                 if name.lower() == "proposals":
                     print("[!] Note: Proposals are managed through the proposal queue.")
+                    name = input("Enter the table name to display: ")
+                self.display_table(name) # excluding Proposals for duplicate management
             elif choice == "2":
                 print("Accessing creator proposals...")
                 cursor.execute("SELECT * FROM Proposals ORDER BY PriorityScore DESC")
@@ -74,7 +75,7 @@ class ManagementSystem(AuthSystem):
             
         print(f"\n--- Fetching secure records for {username} ---")
         try:
-            tables_to_check = ['Users', 'ParticipationLedger', 'Proposals']
+            tables_to_check = ['Users', 'Proposals']
             
             for table in tables_to_check:
                 query = f"SELECT * FROM {table} WHERE Username = ?"
@@ -82,6 +83,12 @@ class ManagementSystem(AuthSystem):
                 
                 if not df.empty:
                     print(f"\n[Your Data] Table: {table}")
+                    print(df.to_string(index=False))
+                
+                # exclude HashedPassword from Users table for security
+                if table == 'Users' and not df.empty:
+                    df = df.drop(columns=['HashedPassword'], errors='ignore')
+                    print(f"\n[Your Data] Table: {table} (Sensitive data excluded)")
                     print(df.to_string(index=False))
                     
         except Exception as e:

@@ -36,6 +36,8 @@ class DataManager:
                 if df.empty:
                     print(f"\n[!] The {table_name} table is currently empty.")
                 else:
+                    if table_name.lower() == "users" and 'HashedPassword' in df.columns:
+                        df = df.drop(columns=['HashedPassword']) # drops the HashedPassword column for security reasons
                     print(f"\n--- {table_name} Table ---")
                     print(df.to_string(index=False)) 
             except Exception as e:
