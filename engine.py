@@ -9,7 +9,7 @@ class ManagementSystem(AuthSystem):
     def __init__(self, db_path):
         super().__init__(db_path)
         self.proposal_heap = []
-        self.proposal_counter = 0
+        self.proposal_counter = 0 # Implement corporation code for different companies; E07 for Encrypt 360 (this engine)
 
     def admin_interface(self):
         conn, cursor = self.connect_database()
@@ -44,13 +44,12 @@ class ManagementSystem(AuthSystem):
             print("1. View My Records")
             print("2. Submit Project Proposal")
             print("3. Exit")
-            choice = input("Select an option: ")
+            choice = input("Select an option: ") # Choice navigation logic here
             
             if choice == "1":
                 self.display_talent_records(self.current_user)
             elif choice == "2":
                 self.prop_form()
-                # Choice navigation logic here
             elif choice == "3":
                 break
 
@@ -89,7 +88,6 @@ class ManagementSystem(AuthSystem):
         title = input("Project Title: ").strip() or "Untitled Proposal"
         project_type = input("Project Type: ").strip() or "Undefined"
         genre = input("Genre (Action/Comedy/Drama/etc): ").strip() or "Undefined"
-        max_budget = 750000  # based on existing budget table
 
         try:
             try:
@@ -151,7 +149,7 @@ class ManagementSystem(AuthSystem):
         project_type = str(getattr(proposal, "project_type", "")).lower()
         genre = str(getattr(proposal, "genre", "")).lower()
 
-        # polish scoring logic: x
+        # polish scoring logic: x (finalise weighting soon)
         score = 50
         if project_type in {"film", "series", "video"}:
             score += 10

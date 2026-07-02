@@ -1,4 +1,5 @@
 import os
+import pwinput
 from engine import ManagementSystem
 from auth import AuthSystem
 from dotenv import load_dotenv
@@ -10,7 +11,7 @@ def run_app(auth, engine):
     if auth_choice == "no":
         email = input("Enter your email for verification: ")
         username = input("Choose a username: ")
-        password = input("Choose a password: ")
+        password = pwinput.pwinput(prompt="Password: ", mask="*")
         corpcode = input("Enter your corporate code: ")
         success = auth.sign_up(email, username, password)
         if success:
@@ -21,7 +22,7 @@ def run_app(auth, engine):
 
     if auth_choice == "yes":
         username = input("Username: ")
-        password = input("Password: ")
+        password = pwinput.pwinput(prompt="Password: ", mask="*")
         success = auth.login(username, password)
         if success:
             print("[*] Login successful. You can now log in.")
