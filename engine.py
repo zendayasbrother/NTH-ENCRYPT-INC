@@ -10,6 +10,20 @@ class ManagementSystem(AuthSystem):
         super().__init__(db_path)
         self.proposal_heap = []
         self.proposal_counter = 0 # Implement corporation code for different companies; E07 for Encrypt 360 (this engine)
+        self.current_user = None
+        self.current_user_type = None
+        self.current_user_first_name = None
+
+    def get_current_username(self):
+        current_user = getattr(self, "current_user", None)
+        if current_user:
+            return current_user
+
+        username = getattr(self, "username", None)
+        if username:
+            return username
+
+        return "Unknown"
 
     def admin_interface(self):
         conn, cursor = self.connect_database()
@@ -82,7 +96,7 @@ class ManagementSystem(AuthSystem):
             return
 
         first_name = getattr(self, "current_user_first_name", getattr(self, "first_name", "Creator"))
-        username = getattr(self, "current_user", getattr(self, "username"))
+        username = self.get_current_username()
 
         print("\n--- New Project Proposal Form ---")
         title = input("Project Title: ").strip() or "Untitled Proposal"

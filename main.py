@@ -18,15 +18,15 @@ def run_app(auth, engine):
             print("[*] Sign-up successful. You can now log in.")
         else:
             print("[!] Sign-up failed. Please try again.")
-            return # move respective input validation to auth.py for better separation of concerns
+            return
 
     if auth_choice == "yes":
         username = input("Username: ")
         password = pwinput.pwinput(prompt="Password: ", mask="*")
-        success = auth.login(username, password)
-        if success:
+        login_result = auth.login(username, password)
+        if login_result:
+            user_type, first_name = login_result
             print("[*] Login successful. You can now log in.")
-            user_type, first_name = auth.login(username, password)
             if user_type:
                 print(f"[*] Login successful. Welcome {first_name}.")
                 engine.current_user = username
