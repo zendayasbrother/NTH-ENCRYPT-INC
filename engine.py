@@ -75,7 +75,8 @@ class ManagementSystem(AuthSystem):
             
         print(f"\n--- Fetching secure records for {username} ---")
         try:
-            for table in df.items():
+            tables = ["Users", "Projects", "Proposals"] # use df in init() to expand to all tables in the database
+            for table in tables:
                 query = f"SELECT * FROM {table} WHERE Username = ?" 
                 df = pd.read_sql_query(query, conn, params=(username,))
                 
@@ -104,9 +105,14 @@ class ManagementSystem(AuthSystem):
 
         print("\n--- New Project Proposal Form ---")
         title = input("Project Title: ").strip() or "Untitled Proposal"
-        project_type = input("Project Type: ").strip() or "Undefined"
+        project_type = input("Project Type (TV series/Film/Video): ").strip() or "Undefined"
         genre = input("Genre (Action/Comedy/Drama/etc): ").strip() or "Undefined"
-
+        description = input("Brief Description (max 250 characters): ").strip() or "No description provided."
+        if len(description) > 250:
+            print("[!] Description exceeds the 250-character limit.")
+            description = input("Please provide a shorter description: ").strip()[:250]
+            return
+        
         try:
             try:
                 est_budget = int(input("Estimated Budget (£): "))
@@ -135,6 +141,7 @@ class ManagementSystem(AuthSystem):
             project_type=project_type,
             genre=genre,
             budget=est_budget,
+            description=description,
             submitted_by=username,
         )
 

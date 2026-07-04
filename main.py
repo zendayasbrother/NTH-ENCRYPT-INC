@@ -42,8 +42,6 @@ def run_app(auth, engine):
         print("[!] Authentication failed. Please enter 'yes' or 'no' to proceed.")
         return
 
-
-
 if __name__ == "__main__":
     load_dotenv()
     db_path = os.getenv("DB_PATH")
