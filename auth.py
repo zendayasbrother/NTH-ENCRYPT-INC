@@ -1,3 +1,5 @@
+from unittest import result
+
 import bcrypt
 import sqlite3  
 from database import DataManager
@@ -60,7 +62,10 @@ class AuthSystem(DataManager):
             
             if result and result[0] is not None: 
                 if self.check_password(password, result[0]):
-                    return result[2], result[1] 
+                    user_type = result[2]
+                    first_name = result[1]
+
+                    return user_type, first_name
                 else:
                     print("[!] Invalid Password.")
             else:

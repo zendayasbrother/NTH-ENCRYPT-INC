@@ -20,12 +20,11 @@ def run_app(auth, engine):
             print("[!] Sign-up failed. Please try again.")
             return
 
-    if auth_choice == "yes":
+    elif auth_choice == "yes":
         username = input("Username: ")
-        password = pwinput.pwinput(prompt="Create Password: ", mask="*")
-        success = auth.login(username, password)
-        if success:
-            user_type, first_name = auth.get_user_info(username)
+        password = pwinput.pwinput(prompt="Password: ", mask="*")
+        user_type, first_name = auth.login(username, password)
+        if user_type:
             print("[*] Login successful. You can now log in.")
             if user_type:
                 print(f"[*] Login successful. Welcome {first_name}.")

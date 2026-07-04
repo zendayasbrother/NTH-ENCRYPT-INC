@@ -43,4 +43,4 @@ class DataManager:
             except Exception as e:
                 print(f"Error reading table: {e}")
             finally:
-                conn.close() # edit database accordingly
+                conn.close() # edit database accordingly (createdAt timestamps for Proposals and Projects alike)

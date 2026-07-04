@@ -75,20 +75,17 @@ class ManagementSystem(AuthSystem):
             
         print(f"\n--- Fetching secure records for {username} ---")
         try:
-            tables_to_check = ['Users', 'Proposals']
-            
-            for table in tables_to_check:
-                query = f"SELECT * FROM {table} WHERE Username = ?" # fiind secondary attribute to display only relevant records for the logged-in user
+            for table in df.items():
+                query = f"SELECT * FROM {table} WHERE Username = ?" 
                 df = pd.read_sql_query(query, conn, params=(username,))
                 
-                if not df.empty:
-                    print(f"\n[Your Data] Table: {table}")
-                    print(df.to_string(index=False))
+                if df.empty:
+                    continue  # Skip empty tables
                 
                 # exclude HashedPassword from Users table for security
-                if table == 'Users' and not df.empty:
+                if table == 'Users':
                     df = df.drop(columns=['HashedPassword'], errors='ignore')
-                    print(f"\n[Your Data] Table: {table} (Sensitive data excluded)")
+                    print(f"\nTable: {table} (Sensitive data excluded)")
                     print(df.to_string(index=False))
                     
         except Exception as e:
