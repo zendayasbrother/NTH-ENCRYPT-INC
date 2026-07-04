@@ -106,11 +106,19 @@ class ManagementSystem(AuthSystem):
         print("\n--- New Project Proposal Form ---")
         title = input("Project Title: ").strip() or "Untitled Proposal"
         project_type = input("Project Type (TV series/Film/Video): ").strip() or "Undefined"
+        proj_type_table = pd.read_sql_query("SELECT ProjectType FROM Projects", conn)
+        if not proj_type_table.empty and project_type not in proj_type_table['ProjectType'].values:
+            print(f"[!] Project type '{project_type}' is not recognized. Please select TV, Film, or Video.")
+            project_type = input("Project Type (TV series/Film/Video): ").strip() or "Undefined"
+            conn.close()
+            return # fix and clean input validation logic for every proposal feature
+            
         genre = input("Genre (Action/Comedy/Drama/etc): ").strip() or "Undefined"
         description = input("Brief Description (max 250 characters): ").strip() or "No description provided."
         if len(description) > 250:
             print("[!] Description exceeds the 250-character limit.")
             description = input("Please provide a shorter description: ").strip()[:250]
+            conn.close()
             return
         
         try:
@@ -140,8 +148,8 @@ class ManagementSystem(AuthSystem):
             title=title,
             project_type=project_type,
             genre=genre,
-            budget=est_budget,
             description=description,
+            budget=est_budget,
             submitted_by=username,
         )
 
@@ -152,10 +160,10 @@ class ManagementSystem(AuthSystem):
             cursor.execute(
                 """
                 INSERT INTO Proposals 
-                (Title, ProjectType, Genre, Budget, SubmittedBy, PriorityScore) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                (Title, ProjectType, Genre, Description, Budget, SubmittedBy, PriorityScore) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (title, project_type, genre, est_budget, username, score),
+                (title, project_type, genre, description, est_budget, username, score),
             )
             conn.commit()
             print(f"[*] Proposal for '{title}' saved to pending validation queue.")
