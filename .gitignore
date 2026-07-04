@@ -7,6 +7,7 @@
 
 # Ignore MERN scraps
 index.txt
+EI_MVP_Checklist.md
 
 # Ignore Python cache
 __pycache__/

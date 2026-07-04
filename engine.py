@@ -78,7 +78,7 @@ class ManagementSystem(AuthSystem):
             tables_to_check = ['Users', 'Proposals']
             
             for table in tables_to_check:
-                query = f"SELECT * FROM {table} WHERE Username = ?"
+                query = f"SELECT * FROM {table} WHERE Username = ?" # fiind secondary attribute to display only relevant records for the logged-in user
                 df = pd.read_sql_query(query, conn, params=(username,))
                 
                 if not df.empty:
