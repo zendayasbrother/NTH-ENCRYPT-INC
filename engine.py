@@ -32,9 +32,10 @@ class ManagementSystem(AuthSystem):
         while True:
             print("\n--- ADMIN DASHBOARD ---")
             print("1. View Table")
-            print("2. Manage Proposals")
-            print("3. Sign Talent")  # also ability to sign new talent in a similar algorithmic way to the proposal queue
-            print("4. Exit")
+            print("2. View Records")
+            print("3. Manage Proposals")
+            print("4. Sign Talent")  # also ability to sign new talent in a similar algorithmic way to the proposal queue
+            print("5. Exit")
             choice = input("Select an option: ")
             
             if choice == "1":
@@ -43,14 +44,16 @@ class ManagementSystem(AuthSystem):
                     print("[!] Note: Proposals are managed through the proposal queue.")
                     name = input("Enter the table name to display: ")
                 self.display_table(name) # excluding Proposals for duplicate management
-            elif choice == "2":
-                print("Accessing creator proposals...")
-                df = pd.read_sql_query("SELECT * FROM Proposals ORDER BY PriorityScore DESC", conn)
-                print(df)
+            elif choice == "2": 
+                pass
             elif choice == "3":
+                print("Accessing creator proposals...")
+                df = pd.read_sql_query("SELECT * FROM Proposals", conn) # give admins agency over the order
+                print(df)
+            elif choice == "4":
                 print("Signing new talent...")
                 self.sign_talent()
-            elif choice == "4":
+            elif choice == "5":
                 exit_choice = input("Are you sure you want to exit? (yes/no): ").strip().lower()
                 if exit_choice == "yes":
                     print("[*] Exiting Admin Dashboard.")
