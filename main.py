@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 def run_app(auth, engine):
     print("--- Encrypt Inc. OS ---")
+    tenant = ["E07", "ER5"] # E07 is Encrypt 360, ER5 is Dencaps: restaurant supply chain 
     auth_choice = input("Do you have an account? (yes/no): ").strip().lower()
 
     if auth_choice == "no":
@@ -14,8 +15,10 @@ def run_app(auth, engine):
         password = pwinput.pwinput(prompt="Create Password: ", mask="*")
         corpcode = input("Enter your corporate code: ")
         success = auth.sign_up(email, username, password)
-        if success:
-            print("[*] Sign-up successful. You can now log in.")
+        if success and corpcode in tenant:
+            if corpcode == "ER5": 
+                print("Dencaps isn't currently developed. Try again later")
+            print("[*] Sign-up successful. You can now log in.")  
         else:
             print("[!] Sign-up failed. Please try again.")
             return
@@ -23,8 +26,9 @@ def run_app(auth, engine):
     elif auth_choice == "yes":
         username = input("Username: ")
         password = pwinput.pwinput(prompt="Password: ", mask="*")
+        corpcode = input("Enter your corporate code: ")
         user_type, first_name = auth.login(username, password)
-        if user_type:
+        if user_type and corpcode in tenant:
             print("[*] Login successful. You can now log in.")
             if user_type:
                 print(f"[*] Login successful. Welcome {first_name}.")

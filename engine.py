@@ -9,10 +9,11 @@ class ManagementSystem(AuthSystem):
     def __init__(self, db_path):
         super().__init__(db_path)
         self.proposal_heap = []
-        self.proposal_counter = 0 # Implement corporation code for different companies; E07 for Encrypt 360 (this engine)
+        self.proposal_counter = 0
         self.current_user = None
         self.current_user_type = None
         self.current_user_first_name = None
+        self.corpcode = "E07"  # Default corporate code for Encrypt 360
 
     def get_current_username(self):
         current_user = getattr(self, "current_user", None)
@@ -31,8 +32,9 @@ class ManagementSystem(AuthSystem):
         while True:
             print("\n--- ADMIN DASHBOARD ---")
             print("1. View Table")
-            print("2. Manage Proposals") # also ability to sign new talent in a similar algorithmic way to the proposal queue
-            print("3. Exit")
+            print("2. Manage Proposals")
+            print("3. Sign Talent")  # also ability to sign new talent in a similar algorithmic way to the proposal queue
+            print("4. Exit")
             choice = input("Select an option: ")
             
             if choice == "1":
@@ -43,8 +45,12 @@ class ManagementSystem(AuthSystem):
                 self.display_table(name) # excluding Proposals for duplicate management
             elif choice == "2":
                 print("Accessing creator proposals...")
-                cursor.execute("SELECT * FROM Proposals ORDER BY PriorityScore DESC")
+                df = pd.read_sql_query("SELECT * FROM Proposals ORDER BY PriorityScore DESC", conn)
+                print(df)
             elif choice == "3":
+                print("Signing new talent...")
+                self.sign_talent()
+            elif choice == "4":
                 exit_choice = input("Are you sure you want to exit? (yes/no): ").strip().lower()
                 if exit_choice == "yes":
                     print("[*] Exiting Admin Dashboard.")
@@ -52,6 +58,19 @@ class ManagementSystem(AuthSystem):
                     break
                 elif exit_choice == "no":
                     continue
+    
+    def sign_talent(self):
+        print("\n--- Sign New Talent ---")
+        email = input("Enter talent's email for verification: ")
+        username = input("Choose a username for the talent: ")
+        password = input("Create Password for the talent: ") # pwinput.pwinput(prompt="Create Password: ", mask="*") then have it hashed
+        corpcode = input("Enter your corporate code: ")
+
+        success = self.sign_up(email, username, password)
+        if success:
+            print(f"[*] Talent '{username}' signed successfully.")
+        else:
+            print("[!] Talent sign-up failed. Please try again.")
         
     def talent_interface(self):
         while True:
