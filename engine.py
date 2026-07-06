@@ -160,7 +160,7 @@ class ManagementSystem(AuthSystem):
             cursor.execute(
                 """
                 INSERT INTO Proposals
-                (Title, ProjectType, Genre, Duration, Description, Budget, SubmittedBy, PriorityScore)
+                (Title, ProjectType, Genre, Duration, Desc, Budget, SubmittedBy, PriorityScore)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (title, project_type, genre, duration, description, est_budget, username, score),
@@ -278,6 +278,6 @@ class ManagementSystem(AuthSystem):
             _, _, proposal = heapq.heappop(self.proposal_heap)
             title = getattr(proposal, "title", "Untitled")
             score = self.priority_score(proposal)
-            print(f"- {title} | Priority Score: {score}") 
+            print(f"- {title} | Priority Score: {score}")  # next step: push to Projects table in frontend for admin review and approval, then move to Projects table in database
             
         return heap_entry
