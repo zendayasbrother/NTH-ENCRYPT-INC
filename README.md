@@ -1,4 +1,4 @@
-# ENCRYPT INC - Creator & IP Management Platform
+# ENCRYPT INC - Plugin Creator OS 
 
 **An algorithmic ERP system for the modern creator economy** | Built for Creators, Freelancers, and Talent-First Agencies
 
