@@ -103,7 +103,7 @@ Modern creator economies lack transparent, scalable infrastructure for:
 - Libraries: NumPy, Pandas, Bcrypt, Hashlib, Pwinput, Keyboard, Sys, OS
 - Interface: Command-line terminal
 
-**Core Features**
+**Core Features (HARDCORDED)**
 - ✅ Creator and freelancer records with full profiles
 - ✅ Admin authentication + login system (Bcrypt hashing)
 - ✅ Admin superiority: full CRUD + search capabilities
@@ -376,6 +376,20 @@ Art, Comedy, Fashion, Food, Lifestyle, Technology
 ### Phase 2: Production MVP (v1) - Terminal-Based System
 
 **Status**: TBD 
+
+
+**Technology Stack**
+- Backend: Python, PGSQL
+- Libraries: Pytest, Django, Faker, asyncio
+- Interface: Command-line terminal
+
+**Core Features (DECOUPLED)**
+- Basic Plugin Architecture via Decoupling
+- In house Insurance
+- Financial Ledger
+- Currency Conversion and Exchange
+
+
 
 ## 🤝 Contributing
 
