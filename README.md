@@ -134,78 +134,6 @@ Final Score: Type + Budget + Duration + Genre + Title (Ascending = Higher Priori
 
 ---
 
-### Phase 2: Web-Based Agency OS (Year 2) - v1.0
-
-**Focus**: Multi-tenant SaaS, production-grade infrastructure
-
-**Technology Stack**
-- Backend: Django 4.x, Django REST Framework
-- Database: PostgreSQL + DBeaver
-- Testing: Faker integration, Playwright, async threading
-- AI Integration: Hugging Face models, Gemini API
-
-**New Features**
-- 🔄 Multi-tenancy support (data isolation per agency)
-- 📊 Analytics dashboards with project metrics & risk forecasting
-- 💰 Smart Waterfall payment system with escrow deposits
-- 🌍 International talent support (multi-currency, tax per country)
-- 🛡️ In-house insurance (unsuccessful projects absorbed by agency)
-- ⚖️ Tiered payment logic:
-  - Tier 1: Platform fees & overhead deduction
-  - Tier 2: Production cost recoupment
-  - Tier 3: Waterfall distribution (80% talent / 20% agency)
-- 🔐 Escrow & atomic refund mechanisms
-- 📈 Negative balance deterrents
-- 💳 Mini currency exchanger
-- 🎭 Sponsored content atomic transactions
-
-**Database Enhancements**
-```python
-# Multi-tenancy support
-- Tenant (Organization)
-- Pod (Admin:Talent coordination layer)
-- Countries (Tax rates, currencies)
-- TieredPaymentLogic (Waterfall calculations)
-- PerformanceMetrics (Success rate, ROI forecasting)
-```
-
----
-
-### Phase 3: Enterprise IP Registry (Year 3+) - v2.0
-
-**Focus**: IP protection, AI automation, SaaS deployment
-
-**Technology Stack**
-- Deployment: Docker, Kubernetes, CI/CD pipelines
-- AI: OpenAI API, Hugging Face transformers, RAG systems
-- Tax Integration: OpenFisca API for multi-country compliance
-- Monitoring: ELK stack, Prometheus metrics
-
-**Advanced Features**
-- 🏛️ **IP Registry Infrastructure** ("The Moat")
-  - Smart Waterfall triggered on revenue milestones
-  - Automatic phantom equity recalculation
-  - Royalty tracking & exit clause enforcement
-- 🤖 **AI-Powered Systems**
-  - AI personas for project recommendations
-  - Predictive risk analysis
-  - Automated proposal scoring
-- 🌐 **Identity Federation**
-  - SSO/SAML integration
-  - Role-based access control (RBAC)
-  - Audit trail compliance
-- 💼 **Phantom Equity System**
-  - Vesting schedule automation
-  - Budget incentive bonuses (under-budget multipliers)
-  - Ex-talent severability calculations
-  - Legal equity for admins
-- 🏦 **International Operations**
-  - OpenFisca tax calculations
-  - Multi-currency ledger
-  - Dual deployment modes (Standard + Escrow)
-
----
-
 ## 🎨 Design System
 
 ### Visual Identity
@@ -415,29 +343,6 @@ Auth:            Bcrypt
 Libraries:       NumPy, Pandas, Keyboard, Sys, OS
 ```
 
-### Phase 2 (v1.0)
-```
-Frontend:        React.js (MERN stack)
-Backend:         Django 4.x + Django REST Framework
-Database:        PostgreSQL
-Auth:            Django PBKDF2 + JWT
-AI/ML:           Hugging Face, Gemini API
-Testing:         Faker, Playwright, pytest
-```
-
-### Phase 3+ (v2.0)
-```
-Frontend:        Next.js, TypeScript
-Backend:         Django + Celery (async tasks)
-Database:        PostgreSQL + Redis cache
-Deployment:      Docker, Kubernetes
-Auth:            OAuth 2.0, SAML, Identity Federation
-AI/ML:           OpenAI, RAG systems
-Tax:             OpenFisca API integration
-Monitoring:      ELK Stack, Prometheus
-```
-
----
 
 ## 📖 Documentation
 
@@ -477,27 +382,10 @@ We welcome contributions from developers, designers, and domain experts. See [CO
 
 ## 📄 License
 
-Proprietary - Encrypt Inc. © 2024. All rights reserved.
+Proprietary - NTH (Encrypt Inc.) © 2024. All rights reserved.
 
 ---
 
 ## 📞 Contact & Support
 
 - **Founder**: Daniel Onyeakazi
-- **Legal**: Griff Lawson (griff@encrypt.com)
-- **Product**: Angela Keith (angela@encrypt.com)
-- **Technical Support**: [support@encrypt.com](mailto:support@encrypt.com)
-
----
-
-## 🗺️ Roadmap
-
-- **Q1 2024**: Phase 1 MVP launch (terminal-based system)
-- **Q3 2024**: Phase 2 alpha (Django + PostgreSQL)
-- **Q1 2025**: Phase 2 production (analytics dashboards, multi-tenancy)
-- **Q3 2025**: Phase 3 beta (IP Registry, AI automation, SaaS)
-- **2026+**: Enterprise features (Identity Federation, OpenFisca, global expansion)
-
----
-
-**Built with ❤️ by the Encrypt Inc. team | Powering the creator economy**
