@@ -60,7 +60,7 @@ class ManagementSystem(AuthSystem):
                     sys.exit(0)
                     break
                 elif exit_choice == "no":
-                    continue
+                    continue # subsitutee for UI
     
     def sign_talent(self):
         print("\n--- Sign New Talent ---")
@@ -175,7 +175,6 @@ class ManagementSystem(AuthSystem):
             submitted_by=username,
         )
 
-        self._enqueue_proposal(proposal)
         score = self.priority_score(proposal)
 
         try:
@@ -284,22 +283,3 @@ class ManagementSystem(AuthSystem):
             score -= min(5, max(0, budget // max(1000, max_budget // 10)))
 
         return max(0, score)
-
-    def _enqueue_proposal(self, proposal):
-        score = self.priority_score(proposal)
-        self.proposal_counter += 1
-        heap_entry = (-score, self.proposal_counter, proposal)
-        heapq.heappush(self.proposal_heap, heap_entry)
-        # review_pending_proposals
-        if not self.proposal_heap:
-            print("[*] No pending proposals.")
-            return
-
-        print("\n--- Pending Proposals ---")
-        while self.proposal_heap:
-            _, _, proposal = heapq.heappop(self.proposal_heap)
-            title = getattr(proposal, "title", "Untitled")
-            score = self.priority_score(proposal)
-            print(f"- {title} | Priority Score: {score}")  # next step: push to Projects table in frontend for admin review and approval, then move to Projects table in database
-            
-        return heap_entry
