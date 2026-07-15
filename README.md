@@ -1,4 +1,4 @@
-# ENCRYPT INC - Plugin Creator OS 
+# NTH - ENCRYPT INC: Plugin Creator OS 
 
 **An operating system for the modern creator economy** | Built for Creators, Freelancers, and Talent-First Agencies
 
