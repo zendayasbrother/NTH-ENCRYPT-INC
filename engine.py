@@ -181,7 +181,7 @@ class ManagementSystem(AuthSystem):
             cursor.execute(
                 """
                 INSERT INTO Proposals
-                (Title, ProjectType, Genre, Duration, Desc, Budget, SubmittedBy)
+                (Title, ProjectType, Genre, Duration, Desc, EstBudget, SubmittedBy)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (title, project_type, genre, duration, description, est_budget, username),
