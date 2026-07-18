@@ -181,10 +181,10 @@ class ManagementSystem(AuthSystem):
             cursor.execute(
                 """
                 INSERT INTO Proposals
-                (Title, ProjectType, Genre, Duration, Desc, Budget, SubmittedBy, PriorityScore)
+                (Title, ProjectType, Genre, Duration, Desc, Budget, SubmittedBy)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (title, project_type, genre, duration, description, est_budget, username, score),
+                (title, project_type, genre, duration, description, est_budget, username),
             )
             conn.commit()
             print(f"[*] Proposal for '{title}' saved to pending validation queue.")
