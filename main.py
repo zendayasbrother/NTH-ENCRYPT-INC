@@ -50,9 +50,9 @@ if __name__ == "__main__":
     load_dotenv()
     db_path = os.getenv("DB_PATH")
 
-    if db_path and os.path.exists(db_path):
+    if db_path:  # Removed os.path.exists() check for live servers
         auth = AuthSystem(db_path)
         engine = ManagementSystem(db_path)
         run_app(auth, engine)
     else:
-        print(f"Error: Database path is invalid or missing.")
+        print(f"Error: Database path configuration is missing in .env file.")
