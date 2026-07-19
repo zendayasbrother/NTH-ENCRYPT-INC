@@ -20,7 +20,7 @@ class AuthSystem(DataManager):
         hashed = self.hash_password(password)
 
         try: 
-            cursor.execute("SELECT Username, FirstName FROM Users WHERE Email = ?", (email,)) 
+            cursor.execute("SELECT Username, FirstName FROM Users WHERE Email = %s", (email)) 
             record = cursor.fetchone()
             
             if not record:
@@ -30,7 +30,7 @@ class AuthSystem(DataManager):
             existing_username, first_name = record
 
             if existing_username is None or existing_username in ["", "PENDING"]:
-                query = "UPDATE Users SET Username = ?, HashedPassword = ? WHERE Email = ?"
+                query = "UPDATE Users SET Username = %s, HashedPassword = %s WHERE Email = %s"
                 cursor.execute(query, (username, hashed, email))
                 
                 if cursor.rowcount == 0:
@@ -56,7 +56,7 @@ class AuthSystem(DataManager):
         if not conn: return None, None
         
         try:
-            cursor.execute("SELECT HashedPassword, FirstName, UserType FROM Users WHERE Username = ?", (username,))
+            cursor.execute("SELECT HashedPassword, FirstName, UserType FROM Users WHERE Username = %s", (username,))
             result = cursor.fetchone()
             
             if result and result[0] is not None: 

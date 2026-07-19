@@ -10,20 +10,18 @@ class DataManager:
         self.db_path = db_path
 
     def connect_database(self):
-        if not self.db_path or not os.path.exists(self.db_path):
-            print(f"Error: Database file not found at {self.db_path}")
+        if not self.db_path:
+            print("Error: Database connection string is empty.")
             return None, None
             
         try:
-            # Added timeout to handle the OneDrive/Locked file issue
-            con = psycopg2.connect(self.db_path, timeout=20)
+            # Connect directly to your PostgreSQL instance using the string
+            con = psycopg2.connect(self.db_path)
             cursor = con.cursor()
-            
-            cursor.execute("PRAGMA integrity_check;")
-            if cursor.fetchone()[0] == "ok":
-                return con, cursor
+            cursor.execute('SET search_path TO "Notation", public;')
+            return con, cursor
         except psycopg2.Error as error:
-            print(f"Database error: {error}")
+            print(f"Database connection error: {error}")
             return None, None
 
     def display_table(self, table_name):

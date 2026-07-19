@@ -182,7 +182,7 @@ class ManagementSystem(AuthSystem):
                 """
                 INSERT INTO Proposals
                 (Title, ProjectType, Genre, Duration, Desc, EstBudget, SubmittedBy)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (title, project_type, genre, duration, description, est_budget, username),
             )
