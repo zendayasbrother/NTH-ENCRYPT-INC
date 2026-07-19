@@ -1,7 +1,6 @@
 from unittest import result
-
 import bcrypt
-import sqlite3  
+import psycopg2  
 from database import DataManager
 
 class AuthSystem(DataManager): 
@@ -45,7 +44,7 @@ class AuthSystem(DataManager):
                 print(f"[!] Error: {email} already has username '{existing_username}'.")
                 return False
         
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             print(f"Database Error during sign-up: {e}")
             return False
         finally:
@@ -71,7 +70,7 @@ class AuthSystem(DataManager):
             else:
                 print("[!] User not found or account not fully registered.")
                 
-        except sqlite3.Error as e:
+        except psycopg2.Error as e:
             print(f"Database Error during auth: {e}")
         finally:
             if conn:

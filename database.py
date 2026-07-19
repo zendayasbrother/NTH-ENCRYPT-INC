@@ -1,5 +1,5 @@
 import os
-import sqlite3
+import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -16,13 +16,13 @@ class DataManager:
             
         try:
             # Added timeout to handle the OneDrive/Locked file issue
-            con = sqlite3.connect(self.db_path, timeout=20)
+            con = psycopg2.connect(self.db_path, timeout=20)
             cursor = con.cursor()
             
             cursor.execute("PRAGMA integrity_check;")
             if cursor.fetchone()[0] == "ok":
                 return con, cursor
-        except sqlite3.Error as error:
+        except psycopg2.Error as error:
             print(f"Database error: {error}")
             return None, None
 

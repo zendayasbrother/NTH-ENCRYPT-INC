@@ -1,6 +1,6 @@
 from auth import AuthSystem
 import pandas as pd
-import sqlite3
+import psycopg2
 import sys
 import heapq
 from types import SimpleNamespace
