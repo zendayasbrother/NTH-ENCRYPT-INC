@@ -1,252 +1,344 @@
 BEGIN;
 
--- ====================================================================
--- 1. INITIALIZE SCHEMA ENVIRONMENT & FORCE PATHS
--- ====================================================================
-CREATE SCHEMA IF NOT EXISTS "Notation";
-SET search_path TO "Notation", public;
+-- "Notation"."Countries" definition
 
-DROP TABLE IF EXISTS "Notation"."RightsIPRegistry" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Contracts" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Notifications" CASCADE;
-DROP TABLE IF EXISTS "Notation"."AuditLogs" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Payroll" CASCADE;
-DROP TABLE IF EXISTS "Notation"."ParticipationLedger" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Payments" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Assets" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Deliverables" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Tasks" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Pods" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Proposals" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Niches" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Projects" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Users" CASCADE;
-DROP TABLE IF EXISTS "Notation"."Countries" CASCADE;
+-- Drop table
 
--- ====================================================================
--- 2. CREATE MASTER REFERENCE DATA TABLES
--- ====================================================================
+-- DROP TABLE "Notation"."Countries";
+
 CREATE TABLE "Notation"."Countries" (
-    "CountryID" SERIAL PRIMARY KEY,
-    "Country" TEXT NOT NULL UNIQUE,
-    "Currency" VARCHAR(3) NOT NULL,
-    "TaxRate" NUMERIC(5, 2) DEFAULT 0.00,
-    "OpenFiscaID" TEXT
+	"CountryID" serial4 NOT NULL,
+	"Country" text NOT NULL,
+	"Currency" varchar(3) NOT NULL,
+	"TaxRate" numeric(5, 2) DEFAULT 0.00 NULL,
+	"OpenFiscaID" text NULL,
+	CONSTRAINT "Countries_Country_key" UNIQUE ("Country"),
+	CONSTRAINT "Countries_pkey" PRIMARY KEY ("CountryID")
 );
 
-CREATE TABLE "Notation"."Users" (
-    "UserID" SERIAL PRIMARY KEY,
-    "Username" TEXT UNIQUE, 
-    "FirstName" TEXT NOT NULL,
-    "LastName" TEXT NOT NULL,
-    "Sex" TEXT CHECK ("Sex" IN ('M', 'F')),             
-    "DOB" DATE,
-    "Email" TEXT NOT NULL UNIQUE,
-    "HashedPassword" TEXT,
-    "UserType" TEXT NOT NULL CHECK ("UserType" IN ('Admin', 'Creator', 'Freelancer')),
-    "CountryID" INTEGER REFERENCES "Notation"."Countries"("CountryID") ON DELETE SET NULL,
-    "Active" BOOLEAN DEFAULT TRUE
-);
 
-CREATE TABLE "Notation"."Projects" (
-    "ProjectID" SERIAL PRIMARY KEY,
-    "ProjectType" TEXT NOT NULL CHECK ("ProjectType" IN ('TV Series', 'Film')),
-    "Title" TEXT NOT NULL,
-    "Description" TEXT,
-    "Genre" TEXT NOT NULL CHECK ("Genre" IN ('Action', 'Anthology', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Documentary', 'Game Show', 'Sci-Fi')),
-    "TargetAudience" TEXT,
-    "Budget" NUMERIC(12, 2) NOT NULL CHECK ("Budget" <= 500000.00), 
-    "ProductionCosts" NUMERIC(12, 2) DEFAULT 0.00,
-    "GrossRevenue" NUMERIC(12, 2) DEFAULT 0.00,
-    "Phase" TEXT NOT NULL CHECK ("Phase" IN ('Not Started', 'Filming and Production', 'Approved')),
-    "Status" TEXT DEFAULT 'Active',
-    "StartDate" DATE,
-    "EndDate" DATE,
-    "ReleaseDate" DATE,
-    "ROI" NUMERIC(12, 2) GENERATED ALWAYS AS (
-        CASE WHEN "ProductionCosts" > 0 
-             THEN ("GrossRevenue" - "ProductionCosts") / "ProductionCosts" 
-             ELSE 0.00 
-        END
-    ) STORED
-);
+-- "Notation"."Niches" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Niches";
 
 CREATE TABLE "Notation"."Niches" (
-    "NicheID" SERIAL PRIMARY KEY,
-    "NicheName" TEXT UNIQUE NOT NULL
+	"NicheID" serial4 NOT NULL,
+	"NicheName" text NOT NULL,
+	CONSTRAINT "Niches_NicheName_key" UNIQUE ("NicheName"),
+	CONSTRAINT "Niches_pkey" PRIMARY KEY ("NicheID")
 );
 
--- ====================================================================
--- 3. CREATE OPERATION & PIPELINE TABLES
--- ====================================================================
-CREATE TABLE "Notation"."Proposals" (
-    "ProposalID" SERIAL PRIMARY KEY,
-    "Title" TEXT NOT NULL,
-    "Description" TEXT,
-    "Genre" TEXT,
-    "ProjectType" TEXT,
-    "EstBudget" NUMERIC(12, 2),
-    "EstRuntime" INTEGER, 
-    "SubmittedBy" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "Status" TEXT DEFAULT 'Pending Validation',
-    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+-- "Notation"."Projects" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Projects";
+
+CREATE TABLE "Notation"."Projects" (
+	"ProjectID" serial4 NOT NULL,
+	"ProjectType" text NOT NULL,
+	"Title" text NOT NULL,
+	"Description" text NULL,
+	"Genre" text NOT NULL,
+	"TargetAudience" text NULL,
+	"Budget" numeric(12, 2) NOT NULL,
+	"ProductionCosts" numeric(12, 2) DEFAULT 0.00 NULL,
+	"GrossRevenue" numeric(12, 2) DEFAULT 0.00 NULL,
+	"Phase" text NOT NULL,
+	"Status" text DEFAULT 'Active'::text NULL,
+	"StartDate" date NULL,
+	"EndDate" date NULL,
+	"ReleaseDate" date NULL,
+	"ROI" numeric(12, 2) GENERATED ALWAYS AS (
+CASE
+    WHEN "ProductionCosts" > 0::numeric THEN ("GrossRevenue" - "ProductionCosts") / "ProductionCosts"
+    ELSE 0.00
+END) STORED NULL,
+	CONSTRAINT "Projects_Budget_check" CHECK (("Budget" <= 500000.00)),
+	CONSTRAINT "Projects_Genre_check" CHECK (("Genre" = ANY (ARRAY['Action'::text, 'Anthology'::text, 'Comedy'::text, 'Drama'::text, 'Fantasy'::text, 'Horror'::text, 'Documentary'::text, 'Game Show'::text, 'Sci-Fi'::text]))),
+	CONSTRAINT "Projects_Phase_check" CHECK (("Phase" = ANY (ARRAY['Not Started'::text, 'Filming and Production'::text, 'Approved'::text]))),
+	CONSTRAINT "Projects_ProjectType_check" CHECK (("ProjectType" = ANY (ARRAY['TV Series'::text, 'Film'::text]))),
+	CONSTRAINT "Projects_pkey" PRIMARY KEY ("ProjectID")
 );
 
-CREATE TABLE "Notation"."Pods" (
-    "PodID" SERIAL PRIMARY KEY,
-    "AdminID" INTEGER REFERENCES "Notation"."Users"("UserID") ON DELETE RESTRICT,
-    "CreatorID" INTEGER REFERENCES "Notation"."Users"("UserID") ON DELETE RESTRICT,
-    "FreelancerID" INTEGER REFERENCES "Notation"."Users"("UserID") ON DELETE SET NULL, 
-    "ProjectID" INTEGER UNIQUE REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
-);
 
-CREATE TABLE "Notation"."Tasks" (
-    "TaskID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER NOT NULL REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
-    "AssignedUser" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
-    "Title" TEXT NOT NULL,
-    "Description" TEXT,
-    "Priority" TEXT CHECK ("Priority" IN ('Low', 'Medium', 'High', 'Critical')),
-    "Status" TEXT DEFAULT 'Pending' CHECK ("Status" IN ('Pending', 'In Progress', 'Blocked', 'Completed')),
-    "Deadline" DATE,
-    "CompletedAt" TIMESTAMP
-);
+-- "Notation"."AuditLogs" definition
 
-CREATE TABLE "Notation"."Deliverables" (
-    "DeliverableID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER NOT NULL REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
-    "Title" TEXT NOT NULL,
-    "AssignedUser" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
-    "Status" TEXT DEFAULT 'Awaiting Asset' CHECK ("Status" IN ('Awaiting Asset', 'Under Review', 'Approved')),
-    "DueDate" DATE
-);
+-- Drop table
 
-CREATE TABLE "Notation"."Assets" (
-    "AssetID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER NOT NULL REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
-    "AssetType" TEXT NOT NULL, 
-    "Version" VARCHAR(10) DEFAULT 'v1.0',
-    "Owner" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
-    "FileLocation" TEXT NOT NULL,
-    "UploadDate" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ====================================================================
--- 4. CREATE FINANCIALS & REVENUE DISTRIBUTIONS
--- ====================================================================
-CREATE TABLE "Notation"."Payments" (
-    "PaymentID" SERIAL PRIMARY KEY,
-    "Username" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "ProjectID" INTEGER REFERENCES "Notation"."Projects"("ProjectID") ON DELETE SET NULL,
-    "PaymentType" TEXT CHECK ("PaymentType" IN ('Escrow Deposit', 'Flat Fee', 'Bonus Drawdown', 'Refund')),
-    "Amount" NUMERIC(12, 2) NOT NULL,
-    "Timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE "Notation"."ParticipationLedger" (
-    "TransactionID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER NOT NULL REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
-    "Username" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "PaymentType" TEXT NOT NULL CHECK ("PaymentType" IN ('Bonus', 'Equity_Payout', 'Flat_Fee')),
-    "Amount" NUMERIC(12, 2) NOT NULL,
-    "ProjectBalance" NUMERIC(12, 2) DEFAULT 0.00,
-    "RecoupmentThreshold" NUMERIC(12, 2) DEFAULT 0.00,
-    "Timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE "Notation"."Payroll" (
-    "PayrollID" SERIAL PRIMARY KEY,
-    "Username" TEXT UNIQUE REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "GrossPay" NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
-    "Tax" NUMERIC(12, 2) DEFAULT 0.00,
-    "Insurance" NUMERIC(12, 2) DEFAULT 0.00,
-    "PensionContribution" NUMERIC(12, 2) DEFAULT 0.00,
-    "OtherDeductions" NUMERIC(12, 2) DEFAULT 0.00,
-    "NetPay" NUMERIC(12, 2) GENERATED ALWAYS AS ("GrossPay" - ("Tax" + "Insurance" + "PensionContribution" + "OtherDeductions")) STORED,
-    "Bonus" NUMERIC(12, 2) DEFAULT 0.00,
-    "PhantomEquity" NUMERIC(5, 4) DEFAULT 0.0000,
-    "Status" TEXT DEFAULT 'Pending' CHECK ("Status" IN ('Paid', 'Pending', 'Cancelled'))
-);
-
--- ====================================================================
--- 5. LEGAL CONTROLLERS, AUDITS, AND LOGISTICS
--- ====================================================================
-CREATE TABLE "Notation"."Contracts" (
-    "ContractID" SERIAL PRIMARY KEY,
-    "Username" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "StartDate" DATE NOT NULL,
-    "EndDate" DATE NOT NULL,
-    "RevenueSplit" NUMERIC(4, 3) DEFAULT 0.800, 
-    "OwnershipShare" NUMERIC(4, 3) DEFAULT 0.750, 
-    "Signed" BOOLEAN DEFAULT FALSE
-);
-
-CREATE TABLE "Notation"."RightsIPRegistry" (
-    "RegistryID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER UNIQUE REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
-    "AgencyShare" NUMERIC(4, 3) DEFAULT 0.250, 
-    "TalentShare" NUMERIC(4, 3) DEFAULT 0.750, 
-    "Territory" VARCHAR(50) DEFAULT 'Worldwide',
-    "LicenceType" TEXT DEFAULT '7-Year Master Lease',
-    "Expiry" DATE
-);
+-- DROP TABLE "Notation"."AuditLogs";
 
 CREATE TABLE "Notation"."AuditLogs" (
-    "LogID" SERIAL PRIMARY KEY,
-    "ProjectID" INTEGER REFERENCES "Notation"."Projects"("ProjectID") ON DELETE SET NULL,
-    "TableAffected" TEXT,
-    "ChangeType" TEXT NOT NULL,
-    "OldValue" TEXT,
-    "NewValue" TEXT,
-    "Timestamp" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	"LogID" serial4 NOT NULL,
+	"ProjectID" int4 NULL,
+	"TableAffected" text NULL,
+	"ChangeType" text NOT NULL,
+	"OldValue" text NULL,
+	"NewValue" text NULL,
+	"Timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "AuditLogs_pkey" PRIMARY KEY ("LogID"),
+	CONSTRAINT "AuditLogs_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE SET NULL
 );
+
+
+-- "Notation"."RightsIPRegistry" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."RightsIPRegistry";
+
+CREATE TABLE "Notation"."RightsIPRegistry" (
+	"RegistryID" serial4 NOT NULL,
+	"ProjectID" int4 NULL,
+	"AgencyShare" numeric(4, 3) DEFAULT 0.250 NULL,
+	"TalentShare" numeric(4, 3) DEFAULT 0.750 NULL,
+	"Territory" varchar(50) DEFAULT 'Worldwide'::character varying NULL,
+	"LicenceType" text DEFAULT '7-Year Master Lease'::text NULL,
+	"Expiry" date NULL,
+	CONSTRAINT "RightsIPRegistry_ProjectID_key" UNIQUE ("ProjectID"),
+	CONSTRAINT "RightsIPRegistry_pkey" PRIMARY KEY ("RegistryID"),
+	CONSTRAINT "RightsIPRegistry_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Users" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Users";
+
+CREATE TABLE "Notation"."Users" (
+	"UserID" serial4 NOT NULL,
+	"Username" text NULL,
+	"FirstName" text NOT NULL,
+	"LastName" text NOT NULL,
+	"Sex" text NULL,
+	"DOB" date NULL,
+	"Email" text NOT NULL,
+	"HashedPassword" text NULL,
+	"UserType" text NOT NULL,
+	"CountryID" int4 NULL,
+	"Active" bool DEFAULT true NULL,
+	CONSTRAINT "Users_Email_key" UNIQUE ("Email"),
+	CONSTRAINT "Users_Sex_check" CHECK (("Sex" = ANY (ARRAY['M'::text, 'F'::text]))),
+	CONSTRAINT "Users_UserType_check" CHECK (("UserType" = ANY (ARRAY['Admin'::text, 'Creator'::text, 'Freelancer'::text]))),
+	CONSTRAINT "Users_Username_key" UNIQUE ("Username"),
+	CONSTRAINT "Users_pkey" PRIMARY KEY ("UserID"),
+	CONSTRAINT "Users_CountryID_fkey" FOREIGN KEY ("CountryID") REFERENCES "Notation"."Countries"("CountryID") ON DELETE SET NULL
+);
+
+
+-- "Notation"."Assets" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Assets";
+
+CREATE TABLE "Notation"."Assets" (
+	"AssetID" serial4 NOT NULL,
+	"ProjectID" int4 NOT NULL,
+	"AssetType" text NOT NULL,
+	"Version" varchar(10) DEFAULT 'v1.0'::character varying NULL,
+	"Owner" text NULL,
+	"FileLocation" text NOT NULL,
+	"UploadDate" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "Assets_pkey" PRIMARY KEY ("AssetID"),
+	CONSTRAINT "Assets_Owner_fkey" FOREIGN KEY ("Owner") REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
+	CONSTRAINT "Assets_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Contracts" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Contracts";
+
+CREATE TABLE "Notation"."Contracts" (
+	"ContractID" serial4 NOT NULL,
+	"Username" text NULL,
+	"StartDate" date NOT NULL,
+	"EndDate" date NOT NULL,
+	"RevenueSplit" numeric(4, 3) DEFAULT 0.800 NULL,
+	"OwnershipShare" numeric(4, 3) DEFAULT 0.750 NULL,
+	"Signed" bool DEFAULT false NULL,
+	CONSTRAINT "Contracts_pkey" PRIMARY KEY ("ContractID"),
+	CONSTRAINT "Contracts_Username_fkey" FOREIGN KEY ("Username") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Deliverables" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Deliverables";
+
+CREATE TABLE "Notation"."Deliverables" (
+	"DeliverableID" serial4 NOT NULL,
+	"ProjectID" int4 NOT NULL,
+	"Title" text NOT NULL,
+	"AssignedUser" text NULL,
+	"Status" text DEFAULT 'Awaiting Asset'::text NULL,
+	"DueDate" date NULL,
+	CONSTRAINT "Deliverables_Status_check" CHECK (("Status" = ANY (ARRAY['Awaiting Asset'::text, 'Under Review'::text, 'Approved'::text]))),
+	CONSTRAINT "Deliverables_pkey" PRIMARY KEY ("DeliverableID"),
+	CONSTRAINT "Deliverables_AssignedUser_fkey" FOREIGN KEY ("AssignedUser") REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
+	CONSTRAINT "Deliverables_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Notifications" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Notifications";
 
 CREATE TABLE "Notation"."Notifications" (
-    "NotificationID" SERIAL PRIMARY KEY,
-    "User" TEXT REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE,
-    "Message" TEXT NOT NULL,
-    "Status" TEXT DEFAULT 'Unread' CHECK ("Status" IN ('Unread', 'Read')),
-    "CreatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	"NotificationID" serial4 NOT NULL,
+	"User" text NULL,
+	"Message" text NOT NULL,
+	"Status" text DEFAULT 'Unread'::text NULL,
+	"CreatedAt" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "Notifications_Status_check" CHECK (("Status" = ANY (ARRAY['Unread'::text, 'Read'::text]))),
+	CONSTRAINT "Notifications_pkey" PRIMARY KEY ("NotificationID"),
+	CONSTRAINT "Notifications_User_fkey" FOREIGN KEY ("User") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
 );
 
--- ====================================================================
--- 6. DATA POPULATION
--- ====================================================================
-INSERT INTO "Notation"."Niches" ("NicheName") VALUES ('Lifestyle'), ('Food'), ('Fashion'), ('Comedy'), ('Art'), ('Tech');
 
-INSERT INTO "Notation"."Users" ("FirstName", "LastName", "Sex", "DOB", "Email", "Username", "UserType") VALUES 
-('Daniel', 'Onyeakazi', 'M', NULL, 'daniel@nth.com', 'do3005', 'Admin'),
-('Willow', 'Youn', 'F', NULL, 'willow@nth.com', NULL, 'Admin'),
-('Jade', 'Zhang', 'F', NULL, 'jade@nth.com', NULL, 'Admin'),
-('Angela', 'Keith', 'F', NULL, 'angela@nth.com', NULL, 'Admin'),
-('Sven', 'Talefson', 'M', NULL, 'sven@nth.com', NULL, 'Admin'),
-('Teni', 'Olayinka', 'F', NULL, 'teni@nth.com', NULL, 'Admin'),
-('Griff', 'Lawson', 'M', NULL, 'griff@nth.com', NULL, 'Admin'),
-('Alex', 'Crimson', 'M', NULL, 'a.crimson@nth.com', 'acronims', 'Creator'),
-('Michela', 'Giordano', 'F', '2007-09-07', 'm.gior@nth.com', NULL, 'Creator'),
-('Will', 'Keith', 'M', '2006-02-01', 'w.kieth@nth.com', NULL, 'Creator'),
-('Sarah', 'Tall', 'F', '2006-08-20', 's.tall@nth.com', NULL, 'Creator'),
-('Ji-hyun', 'Lee', 'F', '2000-02-04', 'j.lee@nth.com', NULL, 'Creator'),
-('Luca', 'Evels', 'M', '2005-10-18', 'l.evels@nth.com', NULL, 'Creator'),
-('Yas', 'Ahava', 'M', '1998-09-24', 'y.ahava@nth.com', NULL, 'Creator'),
-('Chiara', 'Riso', 'F', '2004-05-21', 'c.riso@nth.com', NULL, 'Creator'),
-('Jason', 'Wang', 'M', '1998-04-09', 'j.wang@nth.com', NULL, 'Creator'),
-('Henry', 'Draper', 'M', '2002-02-25', 'h.draper@nth.com', NULL, 'Creator'),
-('Ilana', 'Raj', 'F', '2004-07-14', 'i.raj@nth.com', NULL, 'Creator'),
-('Adrian', 'Rossi', 'M', '2000-04-28', 'a.rossi@nth.com', NULL, 'Creator'),
-('Grace', 'Venn', 'F', '2003-08-19', 'g.venn@nth.com', NULL, 'Creator'),
-('Jack', 'Edison', 'M', NULL, 'j.edison@nth.com', NULL, 'Freelancer'),
-('Michael', 'Wong-Martinez', 'M', NULL, 'm.wong-martinez@nth.com', NULL, 'Freelancer'),
-('Lily', 'Tall', 'F', NULL, 'l.tall@nth.com', NULL, 'Freelancer'),
-('Tyler', 'Watt', 'M', NULL, 't.watt@nth.com', NULL, 'Freelancer'),
-('Lucy', 'Evans', 'F', NULL, 'l.evans@nth.com', NULL, 'Freelancer'),
-('Avery', 'Ferreira', 'F', NULL, 'a.ferreira@nth.com', NULL, 'Freelancer'),
-('Pamela', 'Gray', 'F', NULL, 'p.gray@nth.com', NULL, 'Freelancer'),
-('Grayson', 'Renn', 'M', NULL, 'g.renn@nth.com', NULL, 'Freelancer'),
-('Winona', 'Lough', 'F', NULL, 'w.lough@nth.com', NULL, 'Freelancer'),
-('Allison', 'Drake', 'F', NULL, 'a.drake@nth.com', NULL, 'Freelancer'),
-('Kieran', 'Reel', 'M', NULL, 'k.reel@nth.com', NULL, 'Freelancer'),
-('Chidi', 'Okonkwo', 'M', NULL, 'c.okonkwo@nth.com', NULL, 'Freelancer'),
-('Samantha', 'Rye', 'F', NULL, 's.rye@nth.com', NULL, 'Freelancer');
+-- "Notation"."ParticipationLedger" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."ParticipationLedger";
+
+CREATE TABLE "Notation"."ParticipationLedger" (
+	"TransactionID" serial4 NOT NULL,
+	"ProjectID" int4 NOT NULL,
+	"Username" text NULL,
+	"PaymentType" text NOT NULL,
+	"Amount" numeric(12, 2) NOT NULL,
+	"ProjectBalance" numeric(12, 2) DEFAULT 0.00 NULL,
+	"RecoupmentThreshold" numeric(12, 2) DEFAULT 0.00 NULL,
+	"Timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "ParticipationLedger_PaymentType_check" CHECK (("PaymentType" = ANY (ARRAY['Bonus'::text, 'Equity_Payout'::text, 'Flat_Fee'::text]))),
+	CONSTRAINT "ParticipationLedger_pkey" PRIMARY KEY ("TransactionID"),
+	CONSTRAINT "ParticipationLedger_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE,
+	CONSTRAINT "ParticipationLedger_Username_fkey" FOREIGN KEY ("Username") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Payments" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Payments";
+
+CREATE TABLE "Notation"."Payments" (
+	"PaymentID" serial4 NOT NULL,
+	"Username" text NULL,
+	"ProjectID" int4 NULL,
+	"PaymentType" text NULL,
+	"Amount" numeric(12, 2) NOT NULL,
+	"Timestamp" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "Payments_PaymentType_check" CHECK (("PaymentType" = ANY (ARRAY['Escrow Deposit'::text, 'Flat Fee'::text, 'Bonus Drawdown'::text, 'Refund'::text]))),
+	CONSTRAINT "Payments_pkey" PRIMARY KEY ("PaymentID"),
+	CONSTRAINT "Payments_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE SET NULL,
+	CONSTRAINT "Payments_Username_fkey" FOREIGN KEY ("Username") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Payroll" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Payroll";
+
+CREATE TABLE "Notation"."Payroll" (
+	"PayrollID" serial4 NOT NULL,
+	"Username" text NULL,
+	"GrossPay" numeric(12, 2) DEFAULT 0.00 NOT NULL,
+	"Tax" numeric(12, 2) DEFAULT 0.00 NULL,
+	"Insurance" numeric(12, 2) DEFAULT 0.00 NULL,
+	"PensionContribution" numeric(12, 2) DEFAULT 0.00 NULL,
+	"OtherDeductions" numeric(12, 2) DEFAULT 0.00 NULL,
+	"NetPay" numeric(12, 2) GENERATED ALWAYS AS (("GrossPay" - ("Tax" + "Insurance" + "PensionContribution" + "OtherDeductions"))) STORED NULL,
+	"Bonus" numeric(12, 2) DEFAULT 0.00 NULL,
+	"PhantomEquity" numeric(5, 4) DEFAULT 0.0000 NULL,
+	"Status" text DEFAULT 'Pending'::text NULL,
+	CONSTRAINT "Payroll_Status_check" CHECK (("Status" = ANY (ARRAY['Paid'::text, 'Pending'::text, 'Cancelled'::text]))),
+	CONSTRAINT "Payroll_Username_key" UNIQUE ("Username"),
+	CONSTRAINT "Payroll_pkey" PRIMARY KEY ("PayrollID"),
+	CONSTRAINT "Payroll_Username_fkey" FOREIGN KEY ("Username") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Pods" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Pods";
+
+CREATE TABLE "Notation"."Pods" (
+	"PodID" serial4 NOT NULL,
+	"AdminID" int4 NULL,
+	"CreatorID" int4 NULL,
+	"FreelancerID" int4 NULL,
+	"ProjectID" int4 NULL,
+	CONSTRAINT "Pods_ProjectID_key" UNIQUE ("ProjectID"),
+	CONSTRAINT "Pods_pkey" PRIMARY KEY ("PodID"),
+	CONSTRAINT "Pods_AdminID_fkey" FOREIGN KEY ("AdminID") REFERENCES "Notation"."Users"("UserID") ON DELETE RESTRICT,
+	CONSTRAINT "Pods_CreatorID_fkey" FOREIGN KEY ("CreatorID") REFERENCES "Notation"."Users"("UserID") ON DELETE RESTRICT,
+	CONSTRAINT "Pods_FreelancerID_fkey" FOREIGN KEY ("FreelancerID") REFERENCES "Notation"."Users"("UserID") ON DELETE SET NULL,
+	CONSTRAINT "Pods_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Proposals" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Proposals";
+
+CREATE TABLE "Notation"."Proposals" (
+	"ProposalID" serial4 NOT NULL,
+	"Title" text NOT NULL,
+	"Description" text NULL,
+	"Genre" text NULL,
+	"ProjectType" text NULL,
+	"EstBudget" numeric(12, 2) NULL,
+	"EstRuntime" int4 NULL,
+	"SubmittedBy" text NULL,
+	"Status" text DEFAULT 'Pending Validation'::text NULL,
+	"CreatedAt" timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+	CONSTRAINT "Proposals_pkey" PRIMARY KEY ("ProposalID"),
+	CONSTRAINT "Proposals_SubmittedBy_fkey" FOREIGN KEY ("SubmittedBy") REFERENCES "Notation"."Users"("Username") ON DELETE CASCADE
+);
+
+
+-- "Notation"."Tasks" definition
+
+-- Drop table
+
+-- DROP TABLE "Notation"."Tasks";
+
+CREATE TABLE "Notation"."Tasks" (
+	"TaskID" serial4 NOT NULL,
+	"ProjectID" int4 NOT NULL,
+	"AssignedUser" text NULL,
+	"Title" text NOT NULL,
+	"Description" text NULL,
+	"Priority" text NULL,
+	"Status" text DEFAULT 'Pending'::text NULL,
+	"Deadline" date NULL,
+	"CompletedAt" timestamp NULL,
+	CONSTRAINT "Tasks_Priority_check" CHECK (("Priority" = ANY (ARRAY['Low'::text, 'Medium'::text, 'High'::text, 'Critical'::text]))),
+	CONSTRAINT "Tasks_Status_check" CHECK (("Status" = ANY (ARRAY['Pending'::text, 'In Progress'::text, 'Blocked'::text, 'Completed'::text]))),
+	CONSTRAINT "Tasks_pkey" PRIMARY KEY ("TaskID"),
+	CONSTRAINT "Tasks_AssignedUser_fkey" FOREIGN KEY ("AssignedUser") REFERENCES "Notation"."Users"("Username") ON DELETE SET NULL,
+	CONSTRAINT "Tasks_ProjectID_fkey" FOREIGN KEY ("ProjectID") REFERENCES "Notation"."Projects"("ProjectID") ON DELETE CASCADE
+);
 
 COMMIT;

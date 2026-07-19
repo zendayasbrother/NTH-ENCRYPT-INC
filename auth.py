@@ -23,18 +23,18 @@ class AuthSystem(DataManager):
 
         try: 
             # 1. Fixed casing using double quotes, and added the trailing tuple comma
-            cursor.execute('SELECT "Username", "FirstName" FROM "Users" WHERE "Email" = %s', (email,)) #[cite: 4]
-            record = cursor.fetchone() #[cite: 4]
+            cursor.execute('SELECT "Username", "FirstName" FROM "Users" WHERE "Email" = %s', (email,)) 
+            record = cursor.fetchone()
             
-            if not record: #[cite: 4]
-                print(f"[!] Access Denied: {email} not in Registry.") #[cite: 4]
+            if not record: 
+                print(f"[!] Access Denied: {email} not in Registry.") 
                 return False 
 
             existing_username, first_name = record 
 
             if existing_username is None or existing_username in ["", "PENDING"]:
-                query = 'UPDATE "Users" SET "Username" = %s, "HashedPassword" = %s WHERE "Email" = %s' #[cite: 4]
-                cursor.execute(query, (username, hashed, email)) #[cite: 4]
+                query = 'UPDATE "Users" SET "Username" = %s, "HashedPassword" = %s WHERE "Email" = %s'
+                cursor.execute(query, (username, hashed, email)) 
                 
                 if cursor.rowcount == 0: 
                     print("[!] Error: No rows updated. Check if Email matches exactly.") 
