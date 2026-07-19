@@ -16,39 +16,42 @@ class AuthSystem(DataManager):
         return bcrypt.checkpw(password.encode('utf-8'), hashed)
     
     def sign_up(self, email, username, password):
-        conn, cursor = self.connect_database()
-        hashed = self.hash_password(password)
+        conn, cursor = self.connect_database() #[cite: 4]
+        if not conn: return False
+        
+        hashed = self.hash_password(password) #[cite: 4]
 
         try: 
-            cursor.execute("SELECT Username, FirstName FROM Users WHERE Email = %s", (email)) 
-            record = cursor.fetchone()
+            # 1. Fixed casing using double quotes, and added the trailing tuple comma
+            cursor.execute('SELECT "Username", "FirstName" FROM "Users" WHERE "Email" = %s', (email,)) #[cite: 4]
+            record = cursor.fetchone() #[cite: 4]
             
-            if not record:
-                print(f"[!] Access Denied: {email} not in Registry.")
-                return False
+            if not record: #[cite: 4]
+                print(f"[!] Access Denied: {email} not in Registry.") #[cite: 4]
+                return False 
 
-            existing_username, first_name = record
+            existing_username, first_name = record 
 
             if existing_username is None or existing_username in ["", "PENDING"]:
-                query = "UPDATE Users SET Username = %s, HashedPassword = %s WHERE Email = %s"
-                cursor.execute(query, (username, hashed, email))
+                query = 'UPDATE "Users" SET "Username" = %s, "HashedPassword" = %s WHERE "Email" = %s' #[cite: 4]
+                cursor.execute(query, (username, hashed, email)) #[cite: 4]
                 
-                if cursor.rowcount == 0:
-                    print("[!] Error: No rows updated. Check if Email matches exactly.")
+                if cursor.rowcount == 0: 
+                    print("[!] Error: No rows updated. Check if Email matches exactly.") 
                     return False
                     
                 conn.commit() 
                 print(f"[*] Identity Verified for {first_name}. Credentials attached.")
-                return True
-            else:
-                print(f"[!] Error: {email} already has username '{existing_username}'.")
+                return True 
+            else: 
+                print(f"[!] Error: {email} already has username '{existing_username}'.") 
                 return False
         
         except psycopg2.Error as e:
-            print(f"Database Error during sign-up: {e}")
-            return False
-        finally:
-            if conn:
+            print(f"Database Error during sign-up: {e}") 
+            return False 
+        finally: 
+            if conn: 
                 conn.close()
         
     def login(self, username, password):

@@ -26,7 +26,7 @@ def run_app(auth, engine):
     elif auth_choice == "yes":
         username = input("Username: ")
         password = pwinput.pwinput(prompt="Password: ", mask="*")
-        corpcode = input("Enter your corporate code: ")
+        corpcode = input("Enter your corporate code: ") # implement forgot password condition
         user_type, first_name = auth.login(username, password)
         if user_type and corpcode in tenant:
             print("[*] Login successful. You can now log in.")
