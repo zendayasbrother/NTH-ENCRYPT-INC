@@ -1,0 +1,15 @@
+# Web Framework & REST API
+Django>=5.0,<6.1
+djangorestframework
+django-cors-headers
+django-filter
+
+# Database Driver for PostgreSQL
+psycopg2-binary
+
+# Utilities & Data Handling
+python-dotenv
+pandas
+
+# Timezone data support for Windows environments
+tzdata
