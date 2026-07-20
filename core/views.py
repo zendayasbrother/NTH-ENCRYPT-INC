@@ -26,8 +26,7 @@ class ProposalSubmitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProposalQueueView(APIView):
-    """Replaces admin_interface choice #3 / pending proposals queue."""
-    permission_classes = [permissions.IsAuthenticated]
+    # replaces Admin's "Manage Proposals"    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         if request.user.role != 'ADMIN':
