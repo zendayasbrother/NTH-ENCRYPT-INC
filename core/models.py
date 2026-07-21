@@ -61,3 +61,25 @@ class Proposal(models.Model):
     submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="proposals")
     status = models.CharField(max_length=20, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
+
+# core/models.py additions
+
+class Payroll(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payrolls")
+    gross_pay = models.DecimalField(max_digits=10, decimal_places=2)
+    tax_deduction = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    national_insurance = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    pension_cont = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    status = models.CharField(max_length=20, default="PENDING")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def net_pay(self):
+        return self.gross_pay - (self.tax_deduction + self.national_insurance + self.pension_cont)
+
+class AuditLog(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True, blank=True)
+    change_type = models.CharField(max_length=50)
+    old_value = models.TextField(blank=True, null=True)
+    new_value = models.TextField(blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
