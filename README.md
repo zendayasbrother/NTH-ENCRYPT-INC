@@ -81,7 +81,7 @@ Status Indicators:
 ### Admin Workflow
 
 ```
-LOGIN (Bcrypt Auth)
+LOGIN (Bcrypt > Django JWT Auth)
 │
 ├─ DASHBOARD
 │  ├─ View all projects & metrics
@@ -198,7 +198,7 @@ Final Score: Type + Budget + Duration + Genre + Title (Ascending = Higher Priori
 
 ## 💻 Implementation / Simulation Guide
 
-TBD
+TBD - Dencaps: Restaurant Supply Chain Simulation 
 
 
 ---
